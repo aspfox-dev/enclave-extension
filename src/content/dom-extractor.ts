@@ -4,7 +4,7 @@ import { hashString } from '@/shared/util/hash';
 
 const INTERACTIVE_SELECTOR =
   'a[href], button, input:not([type="hidden"]), select, textarea, [role="button"], [role="link"], [contenteditable="true"]';
-const MAX_LABEL_LENGTH = 120;
+const MAX_LABEL_LENGTH = 60;
 const MAX_PAGE_TEXT = 12_000;
 
 let registry: HTMLElement[] = [];
