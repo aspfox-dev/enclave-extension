@@ -21,15 +21,8 @@ const FIXED_FIELDS: { key: FixedField; label: string }[] = [
   { key: 'dateOfBirth', label: VAULT_UI.dobLabel },
 ];
 
-const FIELD_CLASS =
-  'rounded-md border border-surface-border bg-surface px-2.5 py-1.5 text-sm text-slate-100 focus:border-accent focus:outline-none';
-
-const SAVE_MESSAGE: Record<SaveState, string> = {
-  idle: '',
-  saving: SETTINGS_UI.saving,
-  saved: SETTINGS_UI.saved,
-  error: SETTINGS_UI.saveError,
-};
+const FIELD =
+  'rounded-md border border-surface-border bg-surface-elevated px-3 py-2 text-[13px] text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none';
 
 export function VaultForm({ vault, saveState, onChange, onSave }: VaultFormProps) {
   const setField = (key: FixedField, value: string) => onChange({ ...vault, [key]: value });
@@ -54,28 +47,32 @@ export function VaultForm({ vault, saveState, onChange, onSave }: VaultFormProps
   const atCustomLimit = vault.customFields.length >= MAX_CUSTOM_VAULT_FIELDS;
 
   return (
-    <section className="flex flex-col gap-4 rounded-lg border border-surface-border bg-surface-raised p-4">
-      <header>
-        <h2 className="text-sm font-medium text-slate-300">{VAULT_UI.heading}</h2>
-        <p className="mt-1 text-[11px] text-slate-500">{VAULT_UI.description}</p>
-      </header>
+    <section className="flex flex-col gap-5 border-t border-surface-border pt-6 mt-6">
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+          {VAULT_UI.heading}
+        </p>
+        <p className="mt-1 text-[12px] text-slate-500">{VAULT_UI.description}</p>
+      </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-4">
         {FIXED_FIELDS.map(({ key, label }) => (
-          <label key={key} className="flex flex-col gap-1">
-            <span className="text-xs text-slate-400">{label}</span>
+          <label key={key} className="flex flex-col gap-1.5">
+            <span className="text-[12px] text-slate-400">{label}</span>
             <input
               type="text"
               value={vault[key]}
               onChange={(event) => setField(key, event.target.value)}
-              className={FIELD_CLASS}
+              className={FIELD}
             />
           </label>
         ))}
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="text-xs font-semibold text-slate-400">{VAULT_UI.customHeading}</span>
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+          {VAULT_UI.customHeading}
+        </p>
         {vault.customFields.map((field) => (
           <CustomFieldRow
             key={field.id}
@@ -88,7 +85,7 @@ export function VaultForm({ vault, saveState, onChange, onSave }: VaultFormProps
           type="button"
           onClick={addCustom}
           disabled={atCustomLimit}
-          className="self-start rounded-md border border-surface-border px-2.5 py-1 text-xs text-slate-300 hover:border-accent hover:text-white disabled:opacity-40"
+          className="self-start rounded-md border border-surface-border px-2.5 py-1.5 text-[12px] text-slate-400 transition-colors hover:border-surface-borderStrong hover:text-slate-100 disabled:opacity-40"
         >
           {VAULT_UI.addCustom}
         </button>
@@ -98,11 +95,15 @@ export function VaultForm({ vault, saveState, onChange, onSave }: VaultFormProps
         <button
           type="button"
           onClick={onSave}
-          className="rounded-md bg-accent px-4 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+          className="rounded-md bg-accent px-4 py-1.5 text-[12px] font-semibold text-white transition-opacity hover:opacity-90 active:opacity-80"
         >
           {VAULT_UI.save}
         </button>
-        <span className="text-xs text-slate-400">{SAVE_MESSAGE[saveState]}</span>
+        {saveState !== 'idle' && (
+          <span className={`text-[12px] ${saveState === 'error' ? 'text-status-error' : 'text-slate-400'}`}>
+            {saveState === 'saving' ? SETTINGS_UI.saving : saveState === 'saved' ? SETTINGS_UI.saved : SETTINGS_UI.saveError}
+          </span>
+        )}
       </div>
     </section>
   );

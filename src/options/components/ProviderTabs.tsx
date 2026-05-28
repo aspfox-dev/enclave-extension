@@ -8,7 +8,7 @@ interface ProviderTabsProps {
 
 export function ProviderTabs({ selected, active, onSelect }: ProviderTabsProps) {
   return (
-    <nav className="flex flex-wrap gap-1.5">
+    <nav className="flex flex-wrap border-b border-surface-border">
       {PROVIDER_IDS.map((id) => {
         const isSelected = id === selected;
         return (
@@ -16,11 +16,15 @@ export function ProviderTabs({ selected, active, onSelect }: ProviderTabsProps) 
             key={id}
             type="button"
             onClick={() => onSelect(id)}
-            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-              isSelected ? 'bg-accent-muted text-white' : 'text-slate-400 hover:bg-surface-raised'
+            className={`-mb-px flex items-center gap-1.5 border-b-2 px-3 pb-2.5 pt-2 text-[12px] font-medium transition-colors ${
+              isSelected
+                ? 'border-accent text-slate-100'
+                : 'border-transparent text-slate-500 hover:text-slate-300'
             }`}
           >
-            {id === active && <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />}
+            {id === active && (
+              <span className="h-1.5 w-1.5 rounded-full bg-status-success" aria-hidden />
+            )}
             {PROVIDER_LABELS[id]}
           </button>
         );

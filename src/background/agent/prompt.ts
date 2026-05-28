@@ -1,9 +1,9 @@
 import { type AgentAction, type AgentStep } from '@/shared/types/agent';
 import { type InteractiveElement, type PageSnapshot } from '@/shared/types/dom';
 
-const MAX_ELEMENTS = 80;
-const MAX_HISTORY = 8;
-const MAX_PROMPT_TEXT = 2_000;
+const MAX_ELEMENTS = 50;
+const MAX_HISTORY = 6;
+const MAX_PROMPT_TEXT = 1_500;
 
 const SYSTEM_PROMPT = `You are Enclave, an autonomous browser agent operating a real web page on the user's behalf.
 Each turn you receive the user's goal, the current page, and a numbered list of interactive elements.
@@ -48,6 +48,7 @@ Rules:
 export interface PromptExtras {
   researchContext?: string;
   vault?: string;
+  memories?: string;
   withVision?: boolean;
 }
 
@@ -55,6 +56,9 @@ function appendExtras(base: string, extras: PromptExtras): string {
   let prompt = base;
   if (extras.researchContext) {
     prompt += `\n\nContext you should use while acting:\n${extras.researchContext}`;
+  }
+  if (extras.memories) {
+    prompt += `\n\nThings you remember from past sessions that might help:\n${extras.memories}`;
   }
   if (extras.vault) {
     prompt += `\n\nUser information you may use to fill form fields when relevant:\n${extras.vault}`;

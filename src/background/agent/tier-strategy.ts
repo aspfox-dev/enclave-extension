@@ -2,7 +2,7 @@ import { runLlm } from '@/shared/llm/client';
 import { type AgentAction, type AgentStep, type AgentTier } from '@/shared/types/agent';
 import { type PageSnapshot } from '@/shared/types/dom';
 
-import { captureActiveTabImage } from '../screenshot';
+import { captureCompressedTabImage } from '../screenshot';
 import { annotateScreenshot } from './overlay';
 import {
   buildRawStepPrompt,
@@ -18,6 +18,7 @@ export interface ChooseActionParams {
   tier: AgentTier;
   goal: string;
   researchContext?: string;
+  memories?: string;
   vault?: string;
   snapshot: PageSnapshot;
   steps: AgentStep[];
@@ -36,7 +37,11 @@ export async function chooseAction(params: ChooseActionParams): Promise<AgentAct
 }
 
 async function chooseDomAction(params: ChooseActionParams): Promise<AgentAction> {
-  const system = buildSystemPrompt({ researchContext: params.researchContext, vault: params.vault });
+  const system = buildSystemPrompt({
+    researchContext: params.researchContext,
+    memories: params.memories,
+    vault: params.vault,
+  });
   const user = buildStepPrompt(params.goal, params.snapshot, params.steps);
   const { text } = await runLlm('agent', {
     messages: [
@@ -50,12 +55,13 @@ async function chooseDomAction(params: ChooseActionParams): Promise<AgentAction>
 }
 
 async function chooseVisionAction(params: ChooseActionParams, markCount: number): Promise<AgentAction> {
-  const screenshot = await captureActiveTabImage();
+  const screenshot = await captureCompressedTabImage();
   const marked = params.snapshot.elements.slice(0, markCount);
   const image = await annotateScreenshot(screenshot, marked, params.snapshot.viewport.pixelRatio);
 
   const system = buildSystemPrompt({
     researchContext: params.researchContext,
+    memories: params.memories,
     vault: params.vault,
     withVision: true,
   });
@@ -72,9 +78,13 @@ async function chooseVisionAction(params: ChooseActionParams, markCount: number)
 }
 
 async function chooseRawAction(params: ChooseActionParams): Promise<AgentAction> {
-  const screenshot = await captureActiveTabImage();
+  const screenshot = await captureCompressedTabImage();
   const { width, height, pixelRatio } = params.snapshot.viewport;
-  const system = buildRawSystemPrompt({ researchContext: params.researchContext, vault: params.vault });
+  const system = buildRawSystemPrompt({
+    researchContext: params.researchContext,
+    memories: params.memories,
+    vault: params.vault,
+  });
   const user = buildRawStepPrompt(
     params.goal,
     params.snapshot,

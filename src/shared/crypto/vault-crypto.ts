@@ -38,8 +38,8 @@ export async function encryptString(plaintext: string): Promise<string> {
 export async function decryptString(payload: string): Promise<string> {
   const key = await loadKey();
   const combined = base64ToBytes(payload);
-  const iv = combined.subarray(0, IV_BYTES);
-  const cipher = combined.subarray(IV_BYTES);
+  const iv = combined.slice(0, IV_BYTES);
+  const cipher = combined.slice(IV_BYTES);
   const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, cipher);
   return new TextDecoder().decode(plain);
 }

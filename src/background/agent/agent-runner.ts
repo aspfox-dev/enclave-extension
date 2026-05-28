@@ -22,6 +22,7 @@ export interface RunnerContext {
   isPaused: () => boolean;
   emit: (event: AgentEvent) => void;
   researchContext?: string;
+  memories?: string;
   vault?: string;
 }
 
@@ -64,6 +65,7 @@ export async function runAgent(ctx: RunnerContext): Promise<AgentResult> {
         tier,
         goal: ctx.goal,
         researchContext: ctx.researchContext,
+        memories: ctx.memories,
         vault: ctx.vault,
         snapshot,
         steps,

@@ -3,7 +3,9 @@ import { type ChatTurn, type PageContext } from '@/shared/types/chat';
 import { type LlmMessage } from '@/shared/types/llm';
 import { type RuntimeRequest, type RuntimeResponse } from '@/shared/types/messaging';
 
-import { captureActiveTabImage } from '../screenshot';
+type ChatAskRequest = Extract<RuntimeRequest, { type: 'chat:ask' }>;
+
+import { captureCompressedTabImage } from '../screenshot';
 import { getActiveTabId, sendToContent } from '../tabs';
 
 const SYSTEM_PROMPT = `You are Enclave's page assistant. The user is reading a web page in their browser and is asking questions about it. The current page's title, URL, and visible text — and possibly a screenshot — are attached to their latest message. Answer using that context plus your general knowledge. Be concise and accurate; quote phrases from the page when it helps.`;
@@ -28,12 +30,12 @@ async function buildMessages(
   }));
 
   const userMessage: LlmMessage = { role: 'user', content: withPageContext(latest, page) };
-  if (submode === 'pro') userMessage.images = [await captureActiveTabImage()];
+  if (submode === 'pro') userMessage.images = [await captureCompressedTabImage()];
 
   return [{ role: 'system', content: SYSTEM_PROMPT }, ...previous, userMessage];
 }
 
-export async function handleChatAsk(request: RuntimeRequest): Promise<RuntimeResponse> {
+export async function handleChatAsk(request: ChatAskRequest): Promise<RuntimeResponse> {
   try {
     const tabId = await getActiveTabId();
     const messages = await buildMessages(request.history, request.submode, tabId);

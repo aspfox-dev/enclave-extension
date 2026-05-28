@@ -19,6 +19,9 @@ const FEATURE_FIELDS: { key: keyof FeatureFlags; label: string }[] = [
   { key: 'memory', label: SETTINGS_UI.memory },
 ];
 
+const FIELD =
+  'rounded-md border border-surface-border bg-surface-elevated px-3 py-2 text-[13px] text-slate-100 focus:border-accent focus:outline-none';
+
 export function LimitsForm({ settings, onChange }: LimitsFormProps) {
   function changeLimit(key: keyof AgentLimits, raw: string) {
     const parsed = Number.parseInt(raw, 10);
@@ -31,36 +34,45 @@ export function LimitsForm({ settings, onChange }: LimitsFormProps) {
   }
 
   return (
-    <section className="flex flex-col gap-4 rounded-lg border border-surface-border bg-surface-raised p-4">
-      <h2 className="text-sm font-medium text-slate-300">{SETTINGS_UI.limitsHeading}</h2>
-      <div className="grid grid-cols-2 gap-3">
+    <section className="flex flex-col gap-5 border-t border-surface-border pt-6 mt-6">
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+        {SETTINGS_UI.limitsHeading}
+      </p>
+      <div className="grid grid-cols-2 gap-4">
         {LIMIT_FIELDS.map(({ key, label }) => (
-          <label key={key} className="flex flex-col gap-1">
-            <span className="text-xs text-slate-400">{label}</span>
+          <label key={key} className="flex flex-col gap-1.5">
+            <span className="text-[12px] text-slate-400">{label}</span>
             <input
               type="number"
               value={settings.limits[key]}
               onChange={(event) => changeLimit(key, event.target.value)}
-              className="rounded-md border border-surface-border bg-surface px-2.5 py-1.5 text-sm text-slate-100 focus:border-accent focus:outline-none"
+              className={FIELD}
             />
           </label>
         ))}
       </div>
 
-      <h2 className="text-sm font-medium text-slate-300">{SETTINGS_UI.behaviorHeading}</h2>
-      <div className="flex flex-col gap-2">
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+        {SETTINGS_UI.behaviorHeading}
+      </p>
+      <div className="flex flex-col gap-3">
         {FEATURE_FIELDS.map(({ key, label }) => (
-          <label key={key} className="flex items-center gap-2 text-sm text-slate-300">
-            <input type="checkbox" checked={settings.features[key]} onChange={() => toggleFeature(key)} />
+          <label key={key} className="flex items-center gap-2.5 text-[13px] text-slate-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={settings.features[key]}
+              onChange={() => toggleFeature(key)}
+              className="accent-accent"
+            />
             {label}
           </label>
         ))}
-        <label className="mt-1 flex flex-col gap-1">
-          <span className="text-xs text-slate-400">{SETTINGS_UI.chatDefault}</span>
+        <label className="mt-1 flex flex-col gap-1.5">
+          <span className="text-[12px] text-slate-400">{SETTINGS_UI.chatDefault}</span>
           <select
             value={settings.chatSubmode}
             onChange={(event) => onChange({ ...settings, chatSubmode: event.target.value as ChatSubmode })}
-            className="w-32 rounded-md border border-surface-border bg-surface px-2.5 py-1.5 text-sm text-slate-100 focus:border-accent focus:outline-none"
+            className={`w-36 ${FIELD}`}
           >
             {CHAT_SUBMODES.map((submode) => (
               <option key={submode} value={submode}>

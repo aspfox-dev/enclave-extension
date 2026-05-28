@@ -7,8 +7,8 @@ interface CustomFieldRowProps {
   onRemove: () => void;
 }
 
-const FIELD_CLASS =
-  'rounded-md border border-surface-border bg-surface px-2.5 py-1.5 text-sm text-slate-100 focus:border-accent focus:outline-none';
+const FIELD =
+  'rounded-md border border-surface-border bg-surface-elevated px-3 py-2 text-[13px] text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none';
 
 export function CustomFieldRow({ field, onChange, onRemove }: CustomFieldRowProps) {
   return (
@@ -18,19 +18,19 @@ export function CustomFieldRow({ field, onChange, onRemove }: CustomFieldRowProp
         value={field.label}
         placeholder={VAULT_UI.customLabelPlaceholder}
         onChange={(event) => onChange({ label: event.target.value })}
-        className={`${FIELD_CLASS} w-32`}
+        className={`${FIELD} w-32`}
       />
       <input
         type="text"
         value={field.value}
         placeholder={VAULT_UI.customValuePlaceholder}
         onChange={(event) => onChange({ value: event.target.value })}
-        className={`${FIELD_CLASS} flex-1`}
+        className={`${FIELD} flex-1`}
       />
       <button
         type="button"
         onClick={onRemove}
-        className="rounded-md border border-surface-border px-2 py-1 text-[11px] text-slate-400 hover:border-red-500/60 hover:text-red-300"
+        className="rounded-md border border-surface-border px-2 py-2 text-[11px] text-slate-400 transition-colors hover:border-status-error/50 hover:text-status-error"
       >
         {VAULT_UI.remove}
       </button>
