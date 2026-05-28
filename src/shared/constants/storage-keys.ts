@@ -4,4 +4,7 @@ export const STORAGE_KEYS = {
   vaultKey: 'enclave:vault-key',
   researchReports: 'enclave:research-reports',
   workflows: 'enclave:workflows',
+  taskHistory: 'enclave:task-history',
+  memories: 'enclave:memories',
+  communityHubCache: 'enclave:community-hub-cache',
 } as const;
