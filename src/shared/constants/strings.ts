@@ -52,6 +52,30 @@ export const AGENT_STATUS_LABELS = {
   stopped: 'Stopped',
 } as const;
 
+export const VERIFICATION_UI = {
+  succeeded: 'Task completed',
+  uncertain: 'Possibly completed',
+  failed: 'Task may have failed',
+  methodVision: 'verified by screenshot',
+  methodDom: 'verified by page signals',
+  confidenceHigh: 'high confidence',
+  confidenceMedium: 'medium confidence',
+  confidenceLow: 'low confidence',
+} as const;
+
+export const HISTORY_UI = {
+  empty: 'Past agent runs will show up here once you finish one.',
+  expand: 'Show details',
+  collapse: 'Hide details',
+  delete: 'Delete',
+  clearAll: 'Clear all',
+  clearConfirm: 'Clear every past task? This cannot be undone.',
+  stepsLabel: 'steps',
+  step: 'step',
+  noScreenshot: 'No screenshot was captured for this run.',
+  unverified: 'Verification was skipped for this run.',
+} as const;
+
 export const SETTINGS_UI = {
   loading: 'Loading settings…',
   apiKeyLabel: 'API key',
@@ -95,6 +119,13 @@ export const RESEARCH_UI = {
   openReport: 'Open',
   delete: 'Delete',
   overviewLabel: 'AI overview',
+  actNowCta: '→ Now act on this',
+  actNowHint: 'Hand the findings to the agent and tell it what to do next.',
+  actInputPlaceholder: 'Then do… (e.g. "open the cheapest listing and add it to my cart")',
+  actSend: 'Run agent',
+  actCancel: 'Cancel',
+  handoffBanner: 'Acting on research findings',
+  handoffClear: 'Forget findings',
 } as const;
 
 export const RESEARCH_STATUS_LABELS = {
@@ -103,6 +134,22 @@ export const RESEARCH_STATUS_LABELS = {
   done: 'done',
   error: 'error',
   skipped: 'skipped',
+} as const;
+
+export const COMMUNITY_UI = {
+  heading: 'Community workflows',
+  searchPlaceholder: 'Search community workflows…',
+  empty: 'No community workflows match your search yet.',
+  loadFailed: 'Could not reach the community hub.',
+  refresh: 'Refresh',
+  refreshing: 'Refreshing…',
+  import: 'Import',
+  imported: 'Imported',
+  byAuthor: 'by',
+  stepsLabel: 'steps',
+  step: 'step',
+  cacheLabel: 'Last refreshed',
+  neverRefreshed: 'Never refreshed',
 } as const;
 
 export const WORKFLOW_UI = {
@@ -128,6 +175,18 @@ export const WORKFLOW_UI = {
   replayDone: 'Replay finished',
   replayFailed: 'Replay failed',
   replayStopped: 'Replay stopped',
+} as const;
+
+export const MEMORY_UI = {
+  heading: 'Persistent memory',
+  description:
+    'Short facts Enclave learns from past runs. Relevant entries get injected into future agent prompts. Cleared when you wipe local extension storage.',
+  empty: 'Nothing remembered yet. Run a task with memory enabled to start the store.',
+  count: 'remembered',
+  delete: 'Delete',
+  clearAll: 'Clear all',
+  clearConfirm: 'Forget every stored memory? This cannot be undone.',
+  disabled: 'Memory is turned off — turn it on under Behavior to start collecting facts.',
 } as const;
 
 export const VAULT_UI = {

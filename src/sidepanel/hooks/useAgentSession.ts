@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { type AgentResult, type AgentStatus, type AgentStep } from '@/shared/types/agent';
 import { AGENT_PORT, type AgentCommand, type AgentEvent } from '@/shared/types/messaging';
+import { type ResearchActionContext } from '@/shared/types/research';
+import { type TaskVerification } from '@/shared/types/verification';
 
 export interface LogEntry {
   id: number;
@@ -14,7 +16,8 @@ export interface AgentSessionApi {
   steps: AgentStep[];
   logs: LogEntry[];
   result: AgentResult | null;
-  start: (goal: string) => void;
+  verification: TaskVerification | null;
+  start: (goal: string, research?: ResearchActionContext) => void;
   pause: () => void;
   resume: () => void;
   stop: () => void;
@@ -25,6 +28,7 @@ export function useAgentSession(): AgentSessionApi {
   const [steps, setSteps] = useState<AgentStep[]>([]);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [result, setResult] = useState<AgentResult | null>(null);
+  const [verification, setVerification] = useState<TaskVerification | null>(null);
 
   const portRef = useRef<chrome.runtime.Port | null>(null);
   const logId = useRef(0);
@@ -43,6 +47,9 @@ export function useAgentSession(): AgentSessionApi {
         return;
       case 'done':
         setResult(event.result);
+        return;
+      case 'verification':
+        setVerification(event.verification);
     }
   }, []);
 
@@ -72,11 +79,12 @@ export function useAgentSession(): AgentSessionApi {
   );
 
   const start = useCallback(
-    (goal: string) => {
+    (goal: string, research?: ResearchActionContext) => {
       setSteps([]);
       setLogs([]);
       setResult(null);
-      send({ type: 'start', goal });
+      setVerification(null);
+      send({ type: 'start', goal, research });
     },
     [send],
   );
@@ -85,5 +93,5 @@ export function useAgentSession(): AgentSessionApi {
   const resume = useCallback(() => send({ type: 'resume' }), [send]);
   const stop = useCallback(() => send({ type: 'stop' }), [send]);
 
-  return { status, steps, logs, result, start, pause, resume, stop };
+  return { status, steps, logs, result, verification, start, pause, resume, stop };
 }

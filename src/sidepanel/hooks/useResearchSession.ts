@@ -19,6 +19,7 @@ export interface ResearchSessionApi {
   aiOverview: string | null;
   history: ResearchReport[];
   error: string | null;
+  latestReport: ResearchReport | null;
   start: (topic: string) => void;
   stop: () => void;
   reopenReport: (report: ResearchReport) => void;
@@ -31,6 +32,7 @@ export function useResearchSession(): ResearchSessionApi {
   const [aiOverview, setAiOverview] = useState<string | null>(null);
   const [history, setHistory] = useState<ResearchReport[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [latestReport, setLatestReport] = useState<ResearchReport | null>(null);
 
   const portRef = useRef<chrome.runtime.Port | null>(null);
 
@@ -65,6 +67,7 @@ export function useResearchSession(): ResearchSessionApi {
         return;
       case 'done':
         setHistory((prev) => [event.report, ...prev.filter((entry) => entry.id !== event.report.id)]);
+        setLatestReport(event.report);
     }
   }, []);
 
@@ -99,6 +102,7 @@ export function useResearchSession(): ResearchSessionApi {
       setSources([]);
       setAiOverview(null);
       setError(null);
+      setLatestReport(null);
       send({ type: 'start', topic });
     },
     [send],
@@ -118,5 +122,16 @@ export function useResearchSession(): ResearchSessionApi {
     [refreshHistory],
   );
 
-  return { phase, sources, aiOverview, history, error, start, stop, reopenReport, removeReport };
+  return {
+    phase,
+    sources,
+    aiOverview,
+    history,
+    error,
+    latestReport,
+    start,
+    stop,
+    reopenReport,
+    removeReport,
+  };
 }

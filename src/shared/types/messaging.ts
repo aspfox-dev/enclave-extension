@@ -3,7 +3,13 @@ import { type ChatSubmode } from '@/shared/constants/settings';
 import { type AgentResult, type AgentStatus, type AgentStep, type ScrollDirection } from './agent';
 import { type ChatTurn, type PageContext } from './chat';
 import { type PageSnapshot } from './dom';
-import { type ResearchPhase, type ResearchReport, type ResearchSource } from './research';
+import {
+  type ResearchActionContext,
+  type ResearchPhase,
+  type ResearchReport,
+  type ResearchSource,
+} from './research';
+import { type TaskVerification } from './verification';
 import { type ReplayPhase, type Workflow, type WorkflowStep } from './workflow';
 
 export const AGENT_PORT = 'enclave-agent';
@@ -43,7 +49,7 @@ export type RuntimeResponse =
   | { ok: false; error: string };
 
 export type AgentCommand =
-  | { type: 'start'; goal: string }
+  | { type: 'start'; goal: string; research?: ResearchActionContext }
   | { type: 'pause' }
   | { type: 'resume' }
   | { type: 'stop' };
@@ -52,7 +58,8 @@ export type AgentEvent =
   | { type: 'status'; status: AgentStatus }
   | { type: 'step'; step: AgentStep }
   | { type: 'log'; level: 'info' | 'error'; message: string }
-  | { type: 'done'; result: AgentResult };
+  | { type: 'done'; result: AgentResult }
+  | { type: 'verification'; verification: TaskVerification };
 
 export type ResearchCommand =
   | { type: 'start'; topic: string }

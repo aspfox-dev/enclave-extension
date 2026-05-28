@@ -26,3 +26,16 @@ export interface ResearchReport {
   sources: ResearchSource[];
   aiOverview?: string;
 }
+
+export interface ResearchActionSource {
+  title: string;
+  url: string;
+  summary: string;
+}
+
+export interface ResearchActionContext {
+  topic: string;
+  conclusion: string;
+  aiOverview?: string;
+  sources: ResearchActionSource[];
+}
