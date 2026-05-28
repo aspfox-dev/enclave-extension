@@ -4,14 +4,35 @@ import { type AgentEvent } from '@/shared/types/messaging';
 import { type AgentLimits, type FeatureFlags } from '@/shared/types/settings';
 import { delay } from '@/shared/util/delay';
 
-import { sendToContent } from '../tabs';
+import { sendToContent, waitForTabReady } from '../tabs';
 import { type ExecutionContext, executeAction } from './action-executor';
 import { LoopGuard } from './loop-guard';
 import { CdpInputController } from './raw-input';
 import { chooseAction } from './tier-strategy';
 
+/**
+ * Programmatically injects the content script into a tab using the same file
+ * declared in the manifest. Called as a fallback when automatic injection is
+ * missed (a known Chromium quirk on certain cross-origin navigations).
+ */
+async function ensureContentScript(tabId: number): Promise<void> {
+  const { content_scripts } = chrome.runtime.getManifest();
+  const files = content_scripts?.[0]?.js ?? [];
+  if (files.length === 0) return;
+  try {
+    await chrome.scripting.executeScript({ target: { tabId }, files });
+  } catch {
+    // Ignore — the tab may not allow scripting (chrome://, pdf, etc.).
+    // The subsequent sendToContent call will surface the real error.
+  }
+}
+
 const PAUSE_POLL_MS = 300;
 const MAX_TIER: AgentTier = 4;
+/** How many times to retry snapshot extraction after a navigation-related failure. */
+const SNAPSHOT_RETRY_ATTEMPTS = 4;
+/** Milliseconds between snapshot retry attempts after waitForTabReady resolves. */
+const SNAPSHOT_RETRY_MS = 500;
 
 export interface RunnerContext {
   goal: string;
@@ -60,7 +81,32 @@ export async function runAgent(ctx: RunnerContext): Promise<AgentResult> {
         return settled('failed', 'Stopped: the overall time limit was reached.', steps);
       }
 
-      const snapshot = await sendToContent<PageSnapshot>(ctx.tabId, { type: 'extract' });
+      // Extract a snapshot, recovering transparently from click-triggered navigation.
+      //
+      // Attempt 0 — immediate (fast path, no navigation happened).
+      // Attempt 1 — wait for the new page to load, then programmatically inject
+      //             the content script in case Chrome's auto-injection was missed
+      //             (a known Chromium quirk on some cross-origin navigations).
+      // Attempts 2-N — poll at short intervals until the script responds.
+      // Rethrows the last error only after all attempts fail.
+      let snapshot!: PageSnapshot;
+      let snapshotError: unknown;
+      for (let attempt = 0; attempt <= SNAPSHOT_RETRY_ATTEMPTS; attempt++) {
+        if (attempt === 1) {
+          await waitForTabReady(ctx.tabId);
+          await ensureContentScript(ctx.tabId);
+        } else if (attempt > 1) {
+          await delay(SNAPSHOT_RETRY_MS);
+        }
+        try {
+          snapshot = await sendToContent<PageSnapshot>(ctx.tabId, { type: 'extract' });
+          snapshotError = undefined;
+          break;
+        } catch (err) {
+          snapshotError = err;
+        }
+      }
+      if (snapshotError !== undefined) throw snapshotError;
       const action = await chooseAction({
         tier,
         goal: ctx.goal,
