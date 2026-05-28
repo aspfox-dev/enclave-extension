@@ -8,19 +8,19 @@ interface ModeTabsProps {
 
 export function ModeTabs({ modes, activeMode, onSelect }: ModeTabsProps) {
   return (
-    <nav className="flex gap-1 border-b border-surface-border px-2 py-2">
+    <nav className="flex border-b border-surface-border px-3">
       {modes.map(({ id, label }) => {
         const isActive = id === activeMode;
         return (
           <button
             key={id}
             type="button"
-            aria-current={isActive}
+            aria-current={isActive ? 'page' : undefined}
             onClick={() => onSelect(id)}
-            className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+            className={`-mb-px border-b-2 px-2.5 pb-2.5 pt-2.5 text-[12px] font-medium transition-colors ${
               isActive
-                ? 'bg-accent-muted text-white'
-                : 'text-slate-400 hover:bg-surface-raised hover:text-slate-200'
+                ? 'border-accent text-slate-100'
+                : 'border-transparent text-slate-500 hover:text-slate-300'
             }`}
           >
             {label}

@@ -9,11 +9,6 @@ interface ChatMessageListProps {
   error: string | null;
 }
 
-const ROLE_CLASS: Record<ChatTurn['role'], string> = {
-  user: 'self-end bg-accent-muted text-white',
-  assistant: 'self-start bg-surface-raised text-slate-100 border border-surface-border',
-};
-
 export function ChatMessageList({ turns, isSending, error }: ChatMessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -21,24 +16,37 @@ export function ChatMessageList({ turns, isSending, error }: ChatMessageListProp
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [turns.length, isSending, error]);
 
-  if (turns.length === 0 && !error && !isSending) {
-    return <p className="mt-2 text-sm text-slate-500">{CHAT_UI.emptyState}</p>;
-  }
-
   return (
-    <div ref={scrollRef} className="flex flex-1 flex-col gap-2 overflow-y-auto">
-      {turns.map((turn) => (
-        <div
-          key={turn.id}
-          className={`max-w-[85%] whitespace-pre-wrap rounded-md px-3 py-2 text-sm leading-relaxed ${ROLE_CLASS[turn.role]}`}
-        >
-          {turn.content}
-        </div>
-      ))}
-      {isSending && <p className="px-1 text-xs text-slate-500">{CHAT_UI.thinking}</p>}
+    <div ref={scrollRef} className="flex flex-1 flex-col gap-3 overflow-y-auto">
+      {turns.length === 0 && !error && !isSending && (
+        <p className="text-[12px] text-slate-500">{CHAT_UI.emptyState}</p>
+      )}
+
+      {turns.map((turn) =>
+        turn.role === 'user' ? (
+          <div
+            key={turn.id}
+            className="self-end max-w-[85%] rounded-md border border-surface-border bg-surface-elevated px-3 py-2 text-[13px] leading-relaxed text-slate-100"
+          >
+            {turn.content}
+          </div>
+        ) : (
+          <p
+            key={turn.id}
+            className="text-[13px] leading-relaxed text-slate-200 whitespace-pre-wrap"
+          >
+            {turn.content}
+          </p>
+        ),
+      )}
+
+      {isSending && (
+        <p className="text-[12px] text-slate-500">{CHAT_UI.thinking}</p>
+      )}
+
       {error && (
-        <div className="self-start rounded-md border border-red-500/40 px-3 py-2 text-xs text-red-300">
-          {error}
+        <div className="border-l-2 border-status-error/60 pl-3 py-2">
+          <p className="text-[12px] text-status-error">{error}</p>
         </div>
       )}
     </div>

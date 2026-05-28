@@ -7,12 +7,20 @@ interface SourceListProps {
   error: string | null;
 }
 
-const STATUS_TONE: Record<SourceStatus, string> = {
-  pending: 'text-slate-500',
+const STATUS_BORDER: Record<SourceStatus, string> = {
+  pending: 'border-surface-borderStrong',
+  active: 'border-accent/60',
+  done: 'border-status-success/50',
+  error: 'border-status-error/50',
+  skipped: 'border-status-warning/40',
+};
+
+const STATUS_LABEL_COLOR: Record<SourceStatus, string> = {
+  pending: 'text-slate-600',
   active: 'text-accent',
-  done: 'text-emerald-300',
-  error: 'text-red-300',
-  skipped: 'text-amber-300',
+  done: 'text-status-success',
+  error: 'text-status-error',
+  skipped: 'text-status-warning',
 };
 
 function hostFor(url: string): string {
@@ -25,36 +33,48 @@ function hostFor(url: string): string {
 
 export function SourceList({ sources, aiOverview, error }: SourceListProps) {
   if (sources.length === 0 && !aiOverview && !error) {
-    return <p className="text-sm text-slate-500">{RESEARCH_UI.emptySources}</p>;
+    return <p className="text-[12px] text-slate-500">{RESEARCH_UI.emptySources}</p>;
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1">
       {aiOverview && (
-        <div className="rounded-md border border-surface-border bg-surface-raised p-3">
-          <p className="text-[11px] uppercase tracking-wide text-slate-500">{RESEARCH_UI.overviewLabel}</p>
-          <p className="mt-1 whitespace-pre-wrap text-xs text-slate-300">{aiOverview}</p>
+        <div className="mb-2 border-l-2 border-accent/50 pl-3 py-2">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+            {RESEARCH_UI.overviewLabel}
+          </p>
+          <p className="mt-1 whitespace-pre-wrap text-[12px] leading-relaxed text-slate-300">
+            {aiOverview}
+          </p>
         </div>
       )}
+
       {sources.map((source, index) => (
         <div
           key={`${index}-${source.url}`}
-          className="rounded-md border border-surface-border bg-surface-raised px-3 py-2"
+          className={`border-l-2 pl-3 py-2 ${STATUS_BORDER[source.status]}`}
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="truncate text-xs text-slate-200">{source.title || hostFor(source.url)}</span>
-            <span className={`text-[11px] ${STATUS_TONE[source.status]}`}>
+            <span className="min-w-0 flex-1 truncate text-[12px] text-slate-200">
+              {source.title || hostFor(source.url)}
+            </span>
+            <span
+              className={`shrink-0 text-[10px] font-semibold uppercase tracking-wide ${STATUS_LABEL_COLOR[source.status]}`}
+            >
               {RESEARCH_STATUS_LABELS[source.status]}
             </span>
           </div>
           <p className="mt-0.5 truncate text-[11px] text-slate-500">{hostFor(source.url)}</p>
           {source.status === 'error' && source.error && (
-            <p className="mt-1 text-[11px] text-red-300">{source.error}</p>
+            <p className="mt-0.5 text-[11px] text-status-error">{source.error}</p>
           )}
         </div>
       ))}
+
       {error && (
-        <div className="rounded-md border border-red-500/40 px-3 py-2 text-xs text-red-300">{error}</div>
+        <div className="border-l-2 border-status-error/60 pl-3 py-2">
+          <p className="text-[12px] text-status-error">{error}</p>
+        </div>
       )}
     </div>
   );

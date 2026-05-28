@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { STORAGE_KEYS } from '@/shared/constants/storage-keys';
 import { deleteWorkflow, listWorkflows } from '@/shared/storage/workflow-store';
 import {
   WORKFLOW_PORT,
@@ -82,7 +83,17 @@ export function useWorkflowSession(): WorkflowSessionApi {
   useEffect(() => {
     void refreshWorkflows();
     const port = connect();
+    const onStorageChange = (
+      changes: Record<string, chrome.storage.StorageChange>,
+      area: chrome.storage.AreaName,
+    ) => {
+      if (area !== 'local' || !(STORAGE_KEYS.workflows in changes)) return;
+      const next = changes[STORAGE_KEYS.workflows].newValue as Workflow[] | undefined;
+      setWorkflows(next ?? []);
+    };
+    chrome.storage.onChanged.addListener(onStorageChange);
     return () => {
+      chrome.storage.onChanged.removeListener(onStorageChange);
       port.disconnect();
       portRef.current = null;
     };

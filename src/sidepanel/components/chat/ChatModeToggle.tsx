@@ -17,7 +17,7 @@ export function ChatModeToggle({ submode, hasTurns, onChange, onClear }: ChatMod
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
-        <div className="inline-flex overflow-hidden rounded-md border border-surface-border">
+        <div className="flex gap-4">
           {CHAT_SUBMODES.map((option) => {
             const isActive = option === submode;
             return (
@@ -25,8 +25,8 @@ export function ChatModeToggle({ submode, hasTurns, onChange, onClear }: ChatMod
                 key={option}
                 type="button"
                 onClick={() => onChange(option)}
-                className={`px-3 py-1 text-xs font-medium transition-colors ${
-                  isActive ? 'bg-accent-muted text-white' : 'text-slate-400 hover:bg-surface-raised'
+                className={`text-[12px] font-medium transition-colors ${
+                  isActive ? 'text-slate-100' : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
                 {CHAT_SUBMODE_LABELS[option]}
@@ -38,7 +38,7 @@ export function ChatModeToggle({ submode, hasTurns, onChange, onClear }: ChatMod
           <button
             type="button"
             onClick={onClear}
-            className="text-xs text-slate-500 hover:text-slate-300"
+            className="text-[12px] text-slate-500 transition-colors hover:text-slate-300"
           >
             {CHAT_UI.clear}
           </button>

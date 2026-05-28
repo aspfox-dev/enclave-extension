@@ -30,46 +30,50 @@ export function WorkflowList({
   const busy = replay.phase === 'running' || replay.phase === 'paused';
 
   if (workflows.length === 0 && replay.phase === 'idle') {
-    return <p className="text-xs text-slate-500">{WORKFLOW_UI.empty}</p>;
+    return <p className="text-[12px] text-slate-500">{WORKFLOW_UI.empty}</p>;
   }
 
   return (
     <div className="flex flex-col gap-2">
       <ReplayBanner replay={replay} onPause={onPause} onResume={onResume} onStop={onStop} />
-      {workflows.map((workflow) => (
-        <div
-          key={workflow.id}
-          className="flex items-start justify-between gap-2 rounded-md border border-surface-border bg-surface-raised px-3 py-2"
-        >
-          <div className="min-w-0">
-            <p className="truncate text-xs text-slate-200">{workflow.name}</p>
-            {workflow.description && (
-              <p className="truncate text-[11px] text-slate-500">{workflow.description}</p>
-            )}
-            <p className="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">
-              {stepLabel(workflow.steps.length)}
-            </p>
-          </div>
-          <div className="flex shrink-0 gap-1">
-            <button
-              type="button"
-              onClick={() => onPlay(workflow.id)}
-              disabled={busy}
-              className="rounded-md border border-surface-border px-2 py-0.5 text-[11px] text-slate-300 hover:border-accent hover:text-white disabled:opacity-40"
+      {workflows.length > 0 && (
+        <ul className="flex flex-col gap-0">
+          {workflows.map((workflow) => (
+            <li
+              key={workflow.id}
+              className="flex items-center justify-between gap-2 border-b border-surface-border py-2 last:border-b-0"
             >
-              {WORKFLOW_UI.play}
-            </button>
-            <button
-              type="button"
-              onClick={() => onDelete(workflow.id)}
-              disabled={busy}
-              className="rounded-md border border-surface-border px-2 py-0.5 text-[11px] text-slate-400 hover:border-red-500/60 hover:text-red-300 disabled:opacity-40"
-            >
-              {WORKFLOW_UI.delete}
-            </button>
-          </div>
-        </div>
-      ))}
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[12px] text-slate-200">{workflow.name}</p>
+                {workflow.description && (
+                  <p className="truncate text-[11px] text-slate-500">{workflow.description}</p>
+                )}
+                <p className="mt-0.5 text-[10px] uppercase tracking-wide text-slate-600">
+                  {stepLabel(workflow.steps.length)}
+                </p>
+              </div>
+              <div className="flex shrink-0 gap-1">
+                <button
+                  type="button"
+                  onClick={() => onPlay(workflow.id)}
+                  disabled={busy}
+                  className="rounded-md border border-surface-border px-2 py-0.5 text-[11px] text-slate-400 transition-colors hover:border-surface-borderStrong hover:text-slate-100 disabled:opacity-40"
+                >
+                  {WORKFLOW_UI.play}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDelete(workflow.id)}
+                  disabled={busy}
+                  className="rounded-md border border-surface-border px-2 py-0.5 text-[11px] text-slate-400 transition-colors hover:border-status-error/50 hover:text-status-error disabled:opacity-40"
+                >
+                  {WORKFLOW_UI.delete}
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

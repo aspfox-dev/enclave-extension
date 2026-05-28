@@ -8,28 +8,27 @@ interface AgentControlsProps {
   onStop: () => void;
 }
 
-const CONTROL_CLASS =
-  'rounded-md border border-surface-border px-3 py-1.5 text-xs font-medium text-slate-200 transition-colors hover:border-accent hover:text-white';
+const GHOST =
+  'rounded-md border border-surface-border px-3 py-1.5 text-[12px] font-medium text-slate-400 transition-colors hover:border-surface-borderStrong hover:text-slate-100';
+
+const STOP =
+  'rounded-md border border-surface-border px-3 py-1.5 text-[12px] font-medium text-slate-400 transition-colors hover:border-status-error/50 hover:text-status-error';
 
 export function AgentControls({ status, onPause, onResume, onStop }: AgentControlsProps) {
   if (status !== 'running' && status !== 'paused') return null;
 
   return (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-2">
       {status === 'running' ? (
-        <button type="button" onClick={onPause} className={CONTROL_CLASS}>
+        <button type="button" onClick={onPause} className={GHOST}>
           {AGENT_UI.pause}
         </button>
       ) : (
-        <button type="button" onClick={onResume} className={CONTROL_CLASS}>
+        <button type="button" onClick={onResume} className={GHOST}>
           {AGENT_UI.resume}
         </button>
       )}
-      <button
-        type="button"
-        onClick={onStop}
-        className="rounded-md border border-red-500/40 px-3 py-1.5 text-xs font-medium text-red-300 transition-colors hover:border-red-400 hover:text-red-200"
-      >
+      <button type="button" onClick={onStop} className={STOP}>
         {AGENT_UI.stop}
       </button>
     </div>

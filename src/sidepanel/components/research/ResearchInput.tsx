@@ -9,6 +9,9 @@ interface ResearchInputProps {
   onStop: () => void;
 }
 
+const STOP =
+  'rounded-md border border-surface-border px-3 py-1.5 text-[12px] font-medium text-slate-400 transition-colors hover:border-status-error/50 hover:text-status-error';
+
 export function ResearchInput({ disabled, isBusy, onRun, onStop }: ResearchInputProps) {
   const [topic, setTopic] = useState('');
 
@@ -33,24 +36,20 @@ export function ResearchInput({ disabled, isBusy, onRun, onStop }: ResearchInput
         placeholder={RESEARCH_UI.topicPlaceholder}
         onChange={(event) => setTopic(event.target.value)}
         onKeyDown={handleKeyDown}
-        className="w-full resize-none rounded-md border border-surface-border bg-surface-raised px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none disabled:opacity-50"
+        className="w-full resize-none rounded-md border border-surface-border bg-surface-elevated px-3 py-2.5 text-[13px] text-slate-100 placeholder:text-slate-500 focus:border-accent focus:outline-none disabled:opacity-40"
       />
       <div className="flex items-center justify-between">
-        <span className="text-xs text-slate-500">{RESEARCH_UI.runHint}</span>
+        <span className="text-[11px] text-slate-500">{RESEARCH_UI.runHint}</span>
         {isBusy ? (
-          <button
-            type="button"
-            onClick={onStop}
-            className="rounded-md border border-red-500/40 px-3 py-1.5 text-xs font-medium text-red-300 transition-colors hover:border-red-400 hover:text-red-200"
-          >
+          <button type="button" onClick={onStop} className={STOP}>
             {RESEARCH_UI.stop}
           </button>
         ) : (
           <button
             type="button"
             onClick={submit}
-            disabled={disabled}
-            className="rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+            disabled={disabled || topic.trim().length === 0}
+            className="rounded-md bg-accent px-4 py-1.5 text-[12px] font-semibold text-white transition-opacity hover:opacity-90 active:opacity-80 disabled:opacity-40"
           >
             {RESEARCH_UI.run}
           </button>

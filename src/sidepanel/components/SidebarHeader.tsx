@@ -1,4 +1,4 @@
-import { ACTIONS, APP_NAME, APP_TAGLINE } from '@/shared/constants/strings';
+import { ACTIONS, APP_NAME } from '@/shared/constants/strings';
 
 function openSettings() {
   chrome.runtime.openOptionsPage();
@@ -6,15 +6,12 @@ function openSettings() {
 
 export function SidebarHeader() {
   return (
-    <header className="flex items-center justify-between border-b border-surface-border px-4 py-3">
-      <div>
-        <h1 className="text-sm font-semibold tracking-tight">{APP_NAME}</h1>
-        <p className="text-xs text-slate-400">{APP_TAGLINE}</p>
-      </div>
+    <header className="flex items-center justify-between px-4 py-3">
+      <span className="text-[13px] font-semibold tracking-tight text-slate-100">{APP_NAME}</span>
       <button
         type="button"
         onClick={openSettings}
-        className="rounded-md border border-surface-border px-2.5 py-1 text-xs text-slate-300 transition-colors hover:border-accent hover:text-white"
+        className="text-[12px] font-medium text-slate-500 transition-colors hover:text-slate-200"
       >
         {ACTIONS.openSettings}
       </button>
