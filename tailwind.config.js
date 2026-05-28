@@ -5,13 +5,20 @@ export default {
     extend: {
       colors: {
         surface: {
-          DEFAULT: '#0f1115',
-          raised: '#171a21',
-          border: '#252a34',
+          DEFAULT: '#111215',
+          raised: '#17181d',
+          elevated: '#1d1e24',
+          border: '#2b2d38',
+          borderStrong: '#44475a',
         },
         accent: {
-          DEFAULT: '#5b8cff',
-          muted: '#3a5bb0',
+          DEFAULT: '#5e6ad2',
+          muted: '#3d4494',
+        },
+        status: {
+          success: '#3dd68c',
+          warning: '#f0a940',
+          error: '#e05c5c',
         },
       },
       fontFamily: {

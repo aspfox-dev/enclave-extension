@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,8 +14,27 @@
   body {
     margin: 0;
     background-color: theme('colors.surface.DEFAULT');
-    color: #e6e8ee;
+    color: #e6e8f0;
     font-family: theme('fontFamily.sans');
     -webkit-font-smoothing: antialiased;
+    font-size: 13px;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.surface.borderStrong') transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: theme('colors.surface.borderStrong');
+    border-radius: 2px;
   }
 }
