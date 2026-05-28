@@ -23,5 +23,6 @@
     }
   },
   "include": ["src"],
+  "exclude": ["src/manifest.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
