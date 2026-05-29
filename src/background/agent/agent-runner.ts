@@ -29,9 +29,7 @@ async function ensureContentScript(tabId: number): Promise<void> {
 
 const PAUSE_POLL_MS = 300;
 const MAX_TIER: AgentTier = 4;
-/** How many times to retry snapshot extraction after a navigation-related failure. */
-const SNAPSHOT_RETRY_ATTEMPTS = 4;
-/** Milliseconds between snapshot retry attempts after waitForTabReady resolves. */
+/** Milliseconds between snapshot retry attempts (safety-net only). */
 const SNAPSHOT_RETRY_MS = 500;
 
 export interface RunnerContext {
@@ -81,32 +79,19 @@ export async function runAgent(ctx: RunnerContext): Promise<AgentResult> {
         return settled('failed', 'Stopped: the overall time limit was reached.', steps);
       }
 
-      // Extract a snapshot, recovering transparently from click-triggered navigation.
-      //
-      // Attempt 0 — immediate (fast path, no navigation happened).
-      // Attempt 1 — wait for the new page to load, then programmatically inject
-      //             the content script in case Chrome's auto-injection was missed
-      //             (a known Chromium quirk on some cross-origin navigations).
-      // Attempts 2-N — poll at short intervals until the script responds.
-      // Rethrows the last error only after all attempts fail.
-      let snapshot!: PageSnapshot;
-      let snapshotError: unknown;
-      for (let attempt = 0; attempt <= SNAPSHOT_RETRY_ATTEMPTS; attempt++) {
-        if (attempt === 1) {
-          await waitForTabReady(ctx.tabId);
-          await ensureContentScript(ctx.tabId);
-        } else if (attempt > 1) {
-          await delay(SNAPSHOT_RETRY_MS);
-        }
-        try {
-          snapshot = await sendToContent<PageSnapshot>(ctx.tabId, { type: 'extract' });
-          snapshotError = undefined;
-          break;
-        } catch (err) {
-          snapshotError = err;
-        }
+      // Fast path: action-executor already waited for any navigation before
+      // returning, so this usually succeeds on the first try.
+      // Safety net: if a rare auto-injection miss still leaves the content script
+      // unavailable, wait + force-inject + retry once before giving up.
+      let snapshot: PageSnapshot;
+      try {
+        snapshot = await sendToContent<PageSnapshot>(ctx.tabId, { type: 'extract' });
+      } catch {
+        await waitForTabReady(ctx.tabId);
+        await ensureContentScript(ctx.tabId);
+        await delay(SNAPSHOT_RETRY_MS);
+        snapshot = await sendToContent<PageSnapshot>(ctx.tabId, { type: 'extract' });
       }
-      if (snapshotError !== undefined) throw snapshotError;
       const action = await chooseAction({
         tier,
         goal: ctx.goal,
